@@ -444,7 +444,7 @@ class researchFrame   (wx.Frame):
         self.__Stage_1_Restart(self.stagesPanels[0])
 
     def __SetLayout           (self, mainPanel, stagesPanels):
-        wx.Button(mainPanel, name = 'QuitButton')
+        #wx.Button(mainPanel, name = 'QuitButton')
 
         topSizer = wx.BoxSizer(wx.VERTICAL)
         baseSizer = wx.BoxSizer(wx.VERTICAL)
@@ -458,8 +458,8 @@ class researchFrame   (wx.Frame):
         self.__Stage_1_SetLayout(stagesPanels[0])
         self.__Stage_2_SetLayout(stagesPanels[1])
 
-        topSizer.Add(wx.StaticLine(mainPanel),           **mainStyle['topSizerStaticLine'])
-        topSizer.Add(mainPanel.FindWindow('QuitButton'), **mainStyle['topSizer'])
+        #topSizer.Add(wx.StaticLine(mainPanel),           **mainStyle['topSizerStaticLine'])
+        #topSizer.Add(mainPanel.FindWindow('QuitButton'), **mainStyle['topSizer'])
         baseSizer.Add(stagesPanels[0], **mainStyle['baseSizer'])
         baseSizer.Add(stagesPanels[1], **mainStyle['baseSizer'])
         baseSizer.Add(topSizer, **mainStyle['baseSizer'])
@@ -469,7 +469,7 @@ class researchFrame   (wx.Frame):
     def __SetBinding          (self, mainPanel, stagesPanels):
         self.__Stage_1_SetBinding(stagesPanels[0])
         self.__Stage_2_SetBinding(stagesPanels[1], self.groupPanels)
-        mainPanel.FindWindow('QuitButton').Bind(wx.EVT_BUTTON, self.__QuitBtnClick)
+        #mainPanel.FindWindow('QuitButton').Bind(wx.EVT_BUTTON, self.__QuitBtnClick)
         self.Bind(wx.EVT_PAINT, self.__OnRepaint)
 
     def __SetText             (self, mainPanel):
@@ -487,6 +487,11 @@ class researchFrame   (wx.Frame):
         wx.Slider(panel,     name = 'ConfidenceSlider', value = 0, minValue = 0, maxValue = 20, style = wx.SL_AUTOTICKS)
         wx.StaticText(panel, name = 'ConfidencePercent', style = wx.ALIGN_LEFT)
         wx.StaticText(panel, name = 'ConfidenceTimerSec', style = wx.ALIGN_CENTRE_HORIZONTAL)
+
+        wx.StaticText(panel, name = 'SegsLabels', style = wx.ALIGN_CENTRE_HORIZONTAL)
+        segsFont = wx.Font(10, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        panel.FindWindow('SegsLabels').SetFont(segsFont)
+        
         wx.Button(panel,     name = 'NextButton')
 
         panel.FindWindow('ConfidenceSlider').SetTickFreq(1)
@@ -504,6 +509,7 @@ class researchFrame   (wx.Frame):
         topSizer.Add(panel.FindWindow('ConfidenceTimerSec'), **style['topSizer'])
         topSizer.Add(panel.FindWindow('ConfidencePercent'),  **style['topSizer'])
         topSizer.Add(panel.FindWindow('ConfidenceSlider'),   **style['topSizer'])
+        topSizer.Add(panel.FindWindow('SegsLabels'),         **style['topSizer'])
         topSizer.Add(panel.FindWindow('NextButton'),         **style['buttonSizer'])
 
         panel.SetSizer(topSizer)
@@ -536,6 +542,7 @@ class researchFrame   (wx.Frame):
 
     def __Stage_1_SetText     (self, panel, timer):
         timerText = panel.FindWindow('ConfidenceTimerSec')
+        segsLabels = panel.FindWindow('SegsLabels')
         nextBtn = panel.FindWindow('NextButton')
         slider = panel.FindWindow('ConfidenceSlider')
         percent = panel.FindWindow('ConfidencePercent')
@@ -544,14 +551,17 @@ class researchFrame   (wx.Frame):
                                structs.CurLang('Research', 'TimerSec', False))
             percent.Hide()
             slider.Hide()
+            segsLabels.Hide()
             nextBtn.Hide()
             timerText.Show()
         else:
             nextBtn.SetLabel(structs.CurLang('Research', 'NextButton'))
             percent.SetLabel(structs.CurLang('Research', 'ConfidencePercent')
                              + ' ' + str(slider.GetValue()) + '%')
+            segsLabels.SetLabel(structs.CurLang('Research', 'SegsLabels'))
             percent.Show()
             slider.Show()
+            segsLabels.Show()
             nextBtn.Show()
             timerText.Hide()
         UpdateAll(panel)
