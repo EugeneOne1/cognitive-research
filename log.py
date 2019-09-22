@@ -51,10 +51,11 @@ def NewResearch(person):
         'Score'           : structs.GetSetting('score')
     }
     Research['QPack']      = structs.GetPackName()
-    Research['Stage_1'] = {
+    Research['Stage_1']    = {
+        'Conform'    : structs.GetConform(),
         'Confidence' : [0] * structs.GetQuestionsNumber()
     }
-    Research['Stage_2'] = {
+    Research['Stage_2']    = {
         'Rounds' : []
     }
 
@@ -71,7 +72,7 @@ def GetConfidences():
     return Research['Stage_1']['Confidence']
 
 def GetConfidence(number):
-    return Research['Stage_1']['Confidence'][number]
+    return Research['Stage_1']['Confidence'][number - 1]
 
 def SetAnswerConfidence(number, confidence):
     if number >= 1 and number <= structs.GetQuestionsNumber():

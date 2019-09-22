@@ -401,7 +401,7 @@ def ImportQuestions(data):
         return False
     loaded = json.loads(data)
 
-    requiredFields = ['PackName', 'Author', 'Contents']
+    requiredFields = ['PackName', 'Author', 'Contents', 'Conform']
     for field in requiredFields:
         if field not in loaded:
             return False
@@ -443,6 +443,25 @@ def GetAnswers(number):
     if not __QuestionsNumberCheck(number):
         return CurLang('Returning', 'NotAvailable')
     return QuestionsPack['Contents'][number - 1]['Answers']
+
+def GetConform():
+    global QuestionsPack
+    return QuestionsPack['Conform']
+
+def GetConformed(round, card):
+    global QuestionsPack
+    return QuestionsPack['Conform'][round - 1][card]
+
+def tanimoto(s1, s2):
+    a, b, c = len(s1), len(s2), 0.0
+    for sym in s1:
+        if sym in s2:
+            c += 1
+    return c / (a + b - c)
+
+def ansCompare(s1, s2):
+    s1, s2 = s1.lower(), s2.lower()
+    
 
 def CheckAnswer(number, answer):
     if not __QuestionsNumberCheck(number):

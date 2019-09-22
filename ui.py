@@ -533,7 +533,7 @@ class researchFrame   (wx.Frame):
             InfMsg(structs.CurLang('Research', 'Title')[self.stage - 1],
                structs.CurLang('Research', 'InformationText')[self.stage - 1],
                self)
-            self.questions = structs.GetQuestionsConfident(log.GetConfidences())
+            self.questions = [0] + structs.GetQuestionsConfident(log.GetConfidences())
             self.__SetText(self.mainPanel)
             self.stagesPanels[0].Hide()
             self.stagesPanels[1].Show()
@@ -604,7 +604,14 @@ class researchFrame   (wx.Frame):
             'rndSizer' : { 'flag' : wx.ALL | wx.ALIGN_CENTER_VERTICAL, 'border' : 3 },
             'uppSizer' : { 'flag' : wx.ALL | wx.ALIGN_CENTER, 'border' : 3 },
             'lowSizer' : { 'flag' : wx.ALL | wx.EXPAND, 'border' : 3 },
-            'topSizer' : { 'flag' : wx.ALL | wx.EXPAND, 'border' : 3 }
+            'topSizer' : { 'flag' : wx.ALL | wx.EXPAND, 'border' : 3 },
+            'grpSizer' : [
+                { 'flag' : wx.TOP | wx.EXPAND, 'border' : 60 },
+                { 'flag' : wx.TOP | wx.EXPAND, 'border' : 25 },
+                { 'flag' : wx.TOP | wx.EXPAND, 'border' : 0 },
+                { 'flag' : wx.TOP | wx.EXPAND, 'border' : 25 },
+                { 'flag' : wx.TOP | wx.EXPAND, 'border' : 60 }
+            ]
         }
 
         gN = structs.GetSetting('groups_number')
@@ -613,7 +620,7 @@ class researchFrame   (wx.Frame):
             self.groupPanels.append(p)
             self.panelsNumbers[p] = groupNumber
             self.__Stage_2_SetLayoutG(p)
-            lowSizer.Add(p, **style['lowSizer'])
+            lowSizer.Add(p, **style['grpSizer'][groupNumber])
             if groupNumber != gN - 1:
                 lowSizer.Add(wx.StaticLine(panel, style = wx.LI_VERTICAL), **style['lowSizer'])
 
@@ -633,7 +640,7 @@ class researchFrame   (wx.Frame):
         if structs.GetSetting('score'):
             wx.StaticText(panel, name = 'Score', style = wx.ALIGN_CENTRE_HORIZONTAL)
         wx.StaticText(panel, name = 'QuestionText', style = wx.ALIGN_CENTRE_HORIZONTAL)
-        wx.TextCtrl(panel,   name = 'AnswerField')
+        wx.TextCtrl(panel,   name = 'AnswerField', style = wx.TE_MULTILINE)
         wx.Button(panel,     name = 'AnswerButton')
         wx.Button(panel,     name = 'ValidateButton')
         wx.Button(panel,     name = 'CancelButton')
@@ -665,8 +672,6 @@ class researchFrame   (wx.Frame):
         self.questionsAnswered = 0
         self.answers = []
         if self.roundNumber <= self.roundsNubmer:
-            if self.roundNumber in self.sortRounds and structs.GetSetting('score'):
-                self.__Stage_2_SortPanels(gPanels)
             for gPanel in gPanels:
                 self.__Stage_2_AnswerElementsHide(gPanel)
             self.__Stage_2_SetContents(panel)
@@ -716,7 +721,8 @@ class researchFrame   (wx.Frame):
                     content[name](element, self.panelsNumbers[gPanel])
 
     def __Stage_2_SetScore(self, ScoreText, group):
-        ScoreText.SetLabel(structs.CurLang('Research', 'ScoreText') + ' : ' + str(self.scores[group]))
+        if self.roundNumber > 1:
+            ScoreText.SetLabel(structs.CurLang('Research', 'ScoreText') + ' : ' + str(self.scores[group]))
 
     def __Stage_2_SetQuestionText(self, questionText, group):
         qnumber = self.__Stage_2_CalculateQuestionNumber(group)
@@ -730,7 +736,8 @@ class researchFrame   (wx.Frame):
         additionalLabel.SetLabel(str(group + 1))
 
     def __Stage_2_CalculateQuestionNumber(self, group):
-        return (self.roundNumber - 1) * structs.GetSetting('groups_number') + group
+        #return (self.roundNumber - 1) * structs.GetSetting('groups_number') + group
+        return structs.GetConformed(self.roundNumber, group)
 
     def __Stage_2_NextRoundBtnClick(self, event):
         log.AddRound(structs.NewRound(self.roundNumber, self.answers))
@@ -798,13 +805,6 @@ class researchFrame   (wx.Frame):
         panel.FindWindow('ValidateButton').Hide()
         panel.FindWindow('CancelButton').Hide()
         panel.FindWindow('AnswerText').Hide()
-
-    def __Stage_2_SortPanels(self, gPanels):
-        temp = [self.panelsNumbers[gPanel] for gPanel in gPanels]
-        temp = sorted(temp, reverse = True, key = lambda x : self.scores[x])
-        for gPanel in gPanels:
-            n = self.panelsNumbers[gPanel]
-            self.panelsNumbers[gPanel] = temp[n]
 
     def __QuitBtnClick        (self, event):
         self.Close()
