@@ -1,0 +1,9 @@
+{
+    "additional_label": false,
+    "image": true,
+    "score": true,
+    "groups_number": 5,
+    "lang": "ru",
+    "questions_pack": "C:\\Users\\Eugene\\Documents\\code\\cognitive-research\\dist\\main\\questions.json",
+    "confidence_time": 3
+}
